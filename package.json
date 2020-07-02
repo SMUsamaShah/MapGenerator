@@ -22,6 +22,9 @@
   },
   "homepage": "https://github.com/SMUsamaShah/MapGenerator#readme",
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }

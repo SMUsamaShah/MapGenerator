@@ -53,9 +53,6 @@ function sfc32(a, b, c, d) {
       return (t >>> 0) / 4294967296;
     }
 }
-let seed = xmur3(Date.now()+"");
-let random = sfc32(seed(), seed(), seed(), seed());
-console.log(random());
 // ****************************** end random functions *********************
 
 // perlin noise tutorial https://web.archive.org/web/20160530124230/http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
@@ -113,6 +110,8 @@ function hsl(alpha){
   return `hsla(${hue},${sat}%,${lum}%,${alpha || 0.3})`;
 }
 
+let seed = xmur3(Date.now()+"");
+let random = sfc32(seed(), seed(), seed(), seed());
 tvnoise(ctx,0,0,WIDTH,HEIGHT);
 //papernoise(ctx,0,0,300,300, 1.5, 0.03, 1000);
 //papernoise(ctx,0,0,300,300, .5, 0.29, 50);
