@@ -13,7 +13,7 @@ document.body.appendChild(component());
 let xScale = 1;
 let yScale = 1;
 
-const WIDTH = 250;
+const WIDTH = 300;
 const HEIGHT = 300;
 
 const canvas = document.createElement("canvas");
@@ -81,13 +81,24 @@ function rectangle(ctx,x,y,w,h,color){
   ctx.closePath();
 }
 
+const terrain = []
+for(let i=0; i<WIDTH; ++i) terrain[i] = []
+
+function drawTerrain() {
+  for(let y=0; y<WIDTH; ++y) {
+    for(let x=0; x<HEIGHT; ++x) {
+      let v = terrain[x][y];
+      ctx.fillStyle = hsla(0,0,v,1);
+      ctx.fillRect(x,y,1,1);
+    }
+  }
+}
+
 // each pixel is given random value
 function tvnoise(ctx,size,x,y,w,h){
-  for(let _x=x; _x<w; _x+=size){
-    for(let _y=x; _y<h; _y+=size){
-      ctx.fillStyle = hsl(1);
-      ctx.fillRect(_x,_y,size,size);
-      // ctx.fillRect(random()*WIDTH,random()*HEIGHT,1,1);
+  for(let _x=0; _x<w; _x+=size){
+    for(let _y=0; _y<h; _y+=size){
+      terrain[_x][_y] = random()*100;
     }
   }
 }
@@ -110,8 +121,19 @@ function hsl(alpha){
   return `hsla(${hue},${sat}%,${lum}%,${alpha || 0.3})`;
 }
 
+function hsla(hue, saturation, luminance, alpha){
+  return `hsla(${hue||0},${saturation||0}%,${luminance||0}%,${alpha||1})`
+}
+
 let seed = xmur3("fgdd");
 let random = sfc32(seed(), seed(), seed(), seed());
-tvnoise(ctx,2,0,0,WIDTH,HEIGHT);
+
+
+tvnoise(ctx,1,0,0,WIDTH,HEIGHT);
+drawTerrain();
+// tvnoise(ctx,1.1,0,0,WIDTH,HEIGHT);
+// tvnoise(ctx,3.6,0,0,WIDTH,HEIGHT);
+// tvnoise(ctx,10.5,0,0,WIDTH,HEIGHT);
+
 //papernoise(ctx,0,0,300,300, 1.5, 0.03, 1000);
 //papernoise(ctx,0,0,300,300, .5, 0.29, 50);
