@@ -82,11 +82,11 @@ function rectangle(ctx,x,y,w,h,color){
 }
 
 // each pixel is given random value
-function tvnoise(ctx,x,y,w,h){
-  for(let _x=x; _x<w; ++_x){
-    for(let _y=x; _y<h; ++_y){
+function tvnoise(ctx,size,x,y,w,h){
+  for(let _x=x; _x<w; _x+=size){
+    for(let _y=x; _y<h; _y+=size){
       ctx.fillStyle = hsl(1);
-      ctx.fillRect(_x,_y,1,1);
+      ctx.fillRect(_x,_y,size,size);
       // ctx.fillRect(random()*WIDTH,random()*HEIGHT,1,1);
     }
   }
@@ -110,8 +110,8 @@ function hsl(alpha){
   return `hsla(${hue},${sat}%,${lum}%,${alpha || 0.3})`;
 }
 
-let seed = xmur3(Date.now()+"");
+let seed = xmur3("fgdd");
 let random = sfc32(seed(), seed(), seed(), seed());
-tvnoise(ctx,0,0,WIDTH,HEIGHT);
+tvnoise(ctx,2,0,0,WIDTH,HEIGHT);
 //papernoise(ctx,0,0,300,300, 1.5, 0.03, 1000);
 //papernoise(ctx,0,0,300,300, .5, 0.29, 50);
