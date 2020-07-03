@@ -81,9 +81,11 @@ function rectangle(ctx,x,y,w,h,color){
   ctx.closePath();
 }
 
+// create map and init with 0
 const terrain = []
-for(let i=0; i<WIDTH; ++i) terrain[i] = []
+for(let i=0; i<WIDTH; ++i) {terrain[i] = []; for(let j=0; j<HEIGHT; ++j) terrain[i][j] = 0;}
 
+// draw map
 function drawTerrain() {
   for(let y=0; y<WIDTH; ++y) {
     for(let x=0; x<HEIGHT; ++x) {
@@ -94,11 +96,21 @@ function drawTerrain() {
   }
 }
 
-// each pixel is given random value
+// fill map with random data
 function tvnoise(ctx,size,x,y,w,h){
-  for(let _x=0; _x<w; _x+=size){
-    for(let _y=0; _y<h; _y+=size){
-      terrain[_x][_y] = random()*100;
+  let v;
+  for (let _x=0; _x<w; _x+=size) {
+    for (let _y=0; _y<h; _y+=size) {
+
+      // inner loop is for scaling, to fill chunks of 2d array one after another
+      v = random()*100;
+      for (let xx=_x; xx<(xx+size) && xx<w; ++xx){
+        for (let yy=_y; yy<(yy+size) && yy<h; ++yy){
+          terrain[xx][yy] = (v + terrain[xx][yy])/1.7;
+        }
+      }
+      // end inner loop
+      
     }
   }
 }
@@ -129,9 +141,9 @@ let seed = xmur3("fgdd");
 let random = sfc32(seed(), seed(), seed(), seed());
 
 
-tvnoise(ctx,1,0,0,WIDTH,HEIGHT);
+tvnoise(ctx,25,0,0,WIDTH,HEIGHT);
+tvnoise(ctx,50,0,0,WIDTH,HEIGHT);
 drawTerrain();
-// tvnoise(ctx,1.1,0,0,WIDTH,HEIGHT);
 // tvnoise(ctx,3.6,0,0,WIDTH,HEIGHT);
 // tvnoise(ctx,10.5,0,0,WIDTH,HEIGHT);
 
