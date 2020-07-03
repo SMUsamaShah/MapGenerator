@@ -1,0 +1,11 @@
+{
+  "spec_dir": "tests",
+  "spec_files": [
+    "**/*.[tT]est.js"
+  ],
+  "stopSpecOnExpectationFailure": false,
+  "random": true,
+  "helpers": [
+    "../node_modules/@babel/register/lib/node.js"
+  ]
+}

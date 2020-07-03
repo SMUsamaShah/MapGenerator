@@ -1,9 +1,9 @@
-var path = require('path');
+const path = require('path');
 
 module.exports = {
   devServer: {
-    contentBase: path.join(__dirname, '.'),
+    contentBase: path.join(__dirname, 'src'),
     compress: true,
-    port: 9000
-  }
+    port: 9000,
+  },
 };
