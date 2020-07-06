@@ -33,31 +33,30 @@ export function applyNoise(terrain, size = 1, range = 100) {
   let h = terrain.length;
   let w = terrain[0].length;
 
-  for (let x = 0; x < w; x += size) {
-    for (let y = 0; y < h; y += size) {
+  let max = 0, min = Infinity;
 
-      val = smoothNoise(x, y) * range;
-      terrain[x][y] = val;
+  for (let x = 0; x < w; ++x) {
+    for (let y = 0; y < h; ++y) {
 
-      // // inner loop is for scaled noise, fill chunks of 2d array one after another
-      // for (let _x = x; _x < (x + size) && _x < w; ++_x) {
-      //   for (let _y = y; _y < (y + size) && _y < h; ++_y) {
-      //     let ax = Math.abs(_x - x - size / 2),
-      //       ay = Math.abs(_y - y - size / 2);
+      // this is value noise or fractal noise. Perlin noise interpolate gradients/slopes instead of positive numbers
 
-      //     terrain[_x][_y] = (terrain[_x][_y] + val) / 2;
-      //   }
-      // }
-      // // end inner loop
+      val = interpolatedNoise(x/size, y/size);
+      val *= range;
+      if (terrain[x][y] == 0)
+        terrain[x][y] = val;
+      else 
+        terrain[x][y] = lerp(terrain[x][y], val, 0.12);
 
-      // terrain[x][y] = PerlinNoise_2D(x, y, 32, 4);
-
+      max = max < terrain[x][y] ? terrain[x][y] : max;
+      min = min > terrain[x][y] ? terrain[x][y] : min;
     }
   }
+
+  console.log(min, max);
 }
 
 /**
- * generate a number based on given x y values from previously set seed. 
+ * Generate a number based on given x y values from previously set seed. 
  * Always generates same number from same x y
  * @param {number} x 
  * @param {number} y 
@@ -69,15 +68,25 @@ export function noise(x, y) {
   }
 
   const seed = ((x << 16) + (y << 8)) / 91; // try to generate different number for given x y with some nonsense bitshifting
-  const n = random(seed)();
+  const n = random(seed+3)();
 
   noiseCache[`${x},${y}`] = n;
   return n;
 }
 
+/**
+ * @returns a random gradient value in range [-1, +1]
+ */
+function gradient_1D(x) {
+  const seed = (x << 16) / 91; // try to generate different number for given x y with some nonsense bitshifting
+  const n = -1 + random(seed)()*2; // scale it between -1, +1
+
+  return n;
+}
+
 
 /**
- * smooth noise
+ * Takes average of current point with all 8 points around it to make it smooth
  * @param {number} x 
  * @param {number} y 
  * @returns {number} smooth noise value
@@ -96,26 +105,20 @@ export function smoothNoise(x = 0, y = 0) {
   return n;
 }
 
-export function smoothNoise2(x = 0, y = 0, size = 0){
-  for (let i = 0; i<size; i++) {
-    frequency = 2*i;
-    amplitude = p*i;
-
-    total = total + interpolatedNoise(x * frequency, y * frequency) * amplitude;
-  }
-}
-
 /**
- * Linear interpolation. Returns an interpolated number between a and b based on given position t
- * e.g. a=2 b=4 t=0.5 will return 3
+ * Lerp is short for Linear interpolation. Returns an interpolated number between a and b based on given position t
+ * It's simplest interpolation and results in a straight path between two points
+ * e.g. a=2 b=4 then t=0.5 will return 3
  * @param {number} a start
  * @param {number} b end
  * @param {number} t 0-1
  */
 export function lerp(a, b, t) {
-  return a * (1 - t) + b * t;
+  //return a * (1 - t) + b * t;
+  return a + t*(b - a);
 }
 
+//TODO(usama): replace with something i actually understand and can create myself :p
 function interpolatedNoise(x = 1.0, y = 1.0) {
   const integer_X = Math.floor(x);
   const fractional_X = x - integer_X;
@@ -135,7 +138,7 @@ function interpolatedNoise(x = 1.0, y = 1.0) {
 }
 
 
-function PerlinNoise_2D(x, y, persistence, Number_Of_Octaves) {
+function FractalNoise_2D(x, y, persistence, Number_Of_Octaves) {
   let total = 0, frequency, amplitude;
   const p = persistence;
   const n = Number_Of_Octaves - 1;
